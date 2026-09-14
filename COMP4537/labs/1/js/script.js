@@ -1,4 +1,4 @@
-import { STRINGS } from "/lang/messages/en/user.js";
+import { STRINGS } from "../lang/messages/en/user.js";
 
 // AI assistance disclosure: GitHub Copilot was used during development for commenting and logic validation.
 
