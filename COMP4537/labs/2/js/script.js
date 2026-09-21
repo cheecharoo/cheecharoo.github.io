@@ -2,9 +2,9 @@ import { STRINGS } from "../lang/messages/en/user.js";
 
 // AI assistance disclosure: Copilot was used to help some of the styling, but the logic and structure of the page was written by me. The code was then reviewed and modified to ensure it met the requirements of the assignment and my own coding standards.
 const STORAGE_KEY = "comp4537-lab2-notes";
-const REFRESH_INTERVAL = 2000;
 
 class Note {
+	// Creates a note element with its text, save/remove callbacks, and the matching UI controls.
 	constructor(text, onChange, onRemove, readOnly = false) {
 		this.text = text;
 		this.onChange = onChange;
@@ -14,6 +14,7 @@ class Note {
 		this.createControls(readOnly);
 	}
 
+	// Builds the textarea and optional delete button for the note, depending on whether the reader is in read-only mode.
 	createControls(readOnly) {
 		this.textarea = document.createElement("textarea");
 		this.textarea.value = this.text;
@@ -35,12 +36,14 @@ class Note {
 		}
 	}
 
+	// Returns the current note content as a plain object that can be stored in localStorage.
 	toObject() {
 		return { text: this.textarea.value };
 	}
 }
 
 class NotesStore {
+	// Loads any previously saved notes from localStorage, returning an empty array if the data is missing or invalid.
 	load() {
 		const savedNotes = localStorage.getItem(STORAGE_KEY);
 		if (!savedNotes) {
@@ -55,12 +58,14 @@ class NotesStore {
 		}
 	}
 
+	// Saves the current list of notes as JSON in localStorage.
 	save(notes) {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(notes.map((note) => note.toObject())));
 	}
 }
 
 class WriterApp {
+	// Initializes the writer page by setting up storage, the notes container, and button behavior.
 	constructor() {
 		this.store = new NotesStore();
 		this.notesContainer = document.getElementById("notes");
@@ -73,34 +78,40 @@ class WriterApp {
 		document.getElementById("addButton").addEventListener("click", () => this.addNote(""));
 	}
 
+	// Restores any saved notes and starts the auto-save loop for the writer.
 	start() {
 		const savedNotes = this.store.load();
 		(savedNotes.length ? savedNotes : [{ text: "" }]).forEach((note) => this.addNote(note.text));
 		setInterval(() => this.saveIfNeeded(), REFRESH_INTERVAL);
 	}
 
+	// Adds a new note to the page and tracks it in the app state.
 	addNote(text) {
 		const note = new Note(text, () => this.markAsChanged(), (removedNote) => this.removeNote(removedNote));
 		this.notes.push(note);
 		this.notesContainer.append(note.element);
 	}
 
+	// Marks the current note list as needing to be saved.
 	markAsChanged() {
 		this.hasUnsavedChanges = true;
 	}
 
+	// Removes a note from the UI and saves the updated collection immediately.
 	removeNote(note) {
 		note.element.remove();
 		this.notes = this.notes.filter((currentNote) => currentNote !== note);
 		this.save();
 	}
 
+	// Persists the notes only when there have been changes since the last save.
 	saveIfNeeded() {
 		if (this.hasUnsavedChanges) {
 			this.save();
 		}
 	}
 
+	// Writes the current notes to storage and updates the timestamp shown to the user.
 	save() {
 		this.store.save(this.notes);
 		this.hasUnsavedChanges = false;
@@ -109,6 +120,7 @@ class WriterApp {
 }
 
 class ReaderApp {
+	// Initializes the reader page and its display elements.
 	constructor() {
 		this.store = new NotesStore();
 		this.notesContainer = document.getElementById("readNotes");
@@ -117,9 +129,9 @@ class ReaderApp {
 		document.getElementById("readerBack").textContent = STRINGS.back;
 	}
 
+	// Loads the latest saved notes and refreshes the view only when localStorage changes.
 	start() {
 		this.retrieve();
-		setInterval(() => this.retrieve(), REFRESH_INTERVAL);
 		window.addEventListener("storage", (event) => {
 			if (event.key === STORAGE_KEY) {
 				this.retrieve();
@@ -127,6 +139,7 @@ class ReaderApp {
 		});
 	}
 
+	// Reads notes from storage and renders them as read-only items in the page.
 	retrieve() {
 		this.notesContainer.replaceChildren();
 		const savedNotes = this.store.load();
@@ -143,6 +156,7 @@ class ReaderApp {
 	}
 }
 
+// Chooses the correct page-specific setup based on the current body data-page value.
 function startPage() {
 	const page = document.body.dataset.page;
 
