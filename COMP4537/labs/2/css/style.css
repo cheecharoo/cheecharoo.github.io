@@ -1,0 +1,63 @@
+body {
+	margin: 20px;
+}
+
+.home-page,
+.app-page {
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+
+h1 {
+	margin-bottom: 10px;
+}
+
+h2 {
+	margin-bottom: 25px;
+}
+
+.page-links {
+	display: flex;
+	gap: 10px;
+}
+
+.page-links a,
+.primary-button,
+.back-link,
+.remove-button {
+	padding: 6px 12px;
+}
+
+.page-header {
+	margin-bottom: 20px;
+}
+
+.status {
+	margin: 0;
+}
+
+.notes {
+	margin-bottom: 15px;
+}
+
+.note {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+textarea {
+	width: 100%;
+	min-height: 80px;
+}
+
+.back-link {
+	margin-top: 25px;
+}
+
+@media (max-width: 560px) {
+	.note {
+		display: grid;
+	}
+}
